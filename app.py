@@ -1,3 +1,19 @@
+import os
+import subprocess
+import sys
+
+def install_packages():
+    required_packages = ["pandas", "matplotlib", "seaborn"]
+    for package in required_packages:
+        try:
+            __import__(package)
+        except ImportError:
+            
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+install_packages()
+
+
 import streamlit as st 
 import pandas as pd
 import matplotlib

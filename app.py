@@ -13,7 +13,8 @@ st.title("🚲 Bike Sales Analysis Dashboard")
 # 2. Data Load 
 @st.cache_data
 def load_data():
-    path = r'C:\Users\pskp2\Desktop\bike sales.csv.zip'
+    # ⚠️ ပြင်ဆင်ချက် - Cloud ပေါ်တွင် ဖတ်နိုင်ရန် ကွန်ပျူတာလမ်းကြောင်းကို ဖျက်ပြီး ဖိုင်အမည်သက်သက်ပဲ ထားရပါမည်
+    path = 'bike sales.csv.zip' 
     data = pd.read_csv(path)
     data['Date'] = pd.to_datetime(data['Date'])
     return data

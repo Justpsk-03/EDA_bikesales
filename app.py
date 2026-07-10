@@ -1,13 +1,16 @@
 import streamlit as st 
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.dates as mdates
 
+# 1. Page Title & Layout 
 st.set_page_config(page_title="Bike Sales Dashboard", layout="wide")
 st.title("🚲 Bike Sales Analysis Dashboard")
 
-
+# 2. Data Load 
 @st.cache_data
 def load_data():
     path = r'C:\Users\pskp2\Desktop\bike sales.csv.zip'
@@ -19,7 +22,7 @@ def load_data():
 try:
     df = load_data()
 
-    # 3. Sidebar Filters ပြင်ဆင်ခြင်း
+    # 3. Sidebar Filters 
     st.sidebar.header("PICE Project Assignment")
     st.sidebar.subheader("Student Name: Phyu Sin Kyi, Batch(2026)")
     st.sidebar.write("Parami University")
@@ -42,7 +45,7 @@ try:
     category_names = ['All'] + sorted(df['Product_Category'].unique().tolist())
     selected_category_name = st.sidebar.selectbox("Select Category", options=category_names)
 
-    # Filtering data
+    # 4. Filter data
     filtered_df = df.copy()
 
     if selected_country_name != 'All':
@@ -66,7 +69,7 @@ try:
     avg_unit_cost = filtered_df['Unit_Cost'].mean()
     total_quantity = filtered_df['Order_Quantity'].sum()
 
-    
+    # For the first three columns
     row1_col1, row1_col2, row1_col3 = st.columns(3)
     row1_col1.metric("Total Profit", f"${total_profit:,.2f}")
     row1_col2.metric("Total Cost", f"${total_cost:,.2f}")
@@ -74,7 +77,7 @@ try:
 
     st.markdown(" ") 
 
-    
+    # For the second three columns
     row2_col1, row2_col2, row2_col3 = st.columns(3)
     row2_col1.metric("Avg Unit Price", f"${avg_unit_price:,.2f}")
     row2_col2.metric("Avg Unit Cost", f"${avg_unit_cost:,.2f}")
@@ -93,11 +96,9 @@ try:
     sns.lineplot(data=monthly_trend, x='Date', y='Revenue', ax=ax1, marker='o', label='Revenue', color='#000080', linewidth=2)
     sns.lineplot(data=monthly_trend, x='Date', y='Profit', ax=ax1, marker='s', label='Profit', color='#10B981', linewidth=2)
 
-    #Year format
     ax1.xaxis.set_major_locator(mdates.YearLocator())
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
-    
     ax1.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
     ax1.set_title("Monthly Revenue vs Profit Trend", fontsize=11, fontweight='bold')
     ax1.set_ylabel("Amount ($)")
@@ -107,7 +108,7 @@ try:
 
     st.markdown("<br>", unsafe_allow_html=True) 
 
-    
+    # Product category and order quantity
     chart_col1, chart_col2 = st.columns(2)
 
     with chart_col1:
@@ -117,13 +118,13 @@ try:
         category_colors = []
         for cat in prod_sales['Product_Category']:
             if str(cat).lower() == 'bikes':
-                category_colors.append('#000080')      # Deep Blue
+                category_colors.append('#000080')
             elif str(cat).lower() == 'accessories':
-                category_colors.append('#ADD8E6')    # Soft Blue
+                category_colors.append('#ADD8E6')
             elif str(cat).lower() == 'clothing':
-                category_colors.append("#5A5A94")     # Soft Purple
+                category_colors.append("#5A5A94")
             else:
-                category_colors.append("#44525F")     # Default
+                category_colors.append("#44525F")
                 
         fig2, ax2 = plt.subplots(figsize=(5, 3.5))
         sns.barplot(data=prod_sales, x='Order_Quantity', y='Product_Category', ax=ax2, palette=category_colors)
@@ -152,11 +153,10 @@ try:
         st.pyplot(fig3)
         plt.close()
 
-    # (Age Group Bar Chart)
+    # Age group
     st.markdown("<br>", unsafe_allow_html=True) 
     st.write("**Sales Count by Customer Age Group**")
 
-    
     if 'Age_Group' in filtered_df.columns:
         age_sales = filtered_df['Age_Group'].value_counts().reset_index()
     else:
@@ -178,7 +178,7 @@ try:
     st.pyplot(fig4)
     plt.close()
 
-    #  Unit Cost vs Unit Price ပ
+    # Unit Cost vs Unit Price 
     st.markdown("<br>", unsafe_allow_html=True)
     st.write("**Average Unit Cost vs Unit Price by Product Category**")
 

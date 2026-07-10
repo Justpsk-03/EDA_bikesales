@@ -4,11 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.dates as mdates
 
-# 1. Page Title & Layout သတ်မှတ်ခြင်း
 st.set_page_config(page_title="Bike Sales Dashboard", layout="wide")
 st.title("🚲 Bike Sales Analysis Dashboard")
 
-# 2. Data Load လုပ်ခြင်း
+
 @st.cache_data
 def load_data():
     path = r'C:\Users\pskp2\Desktop\bike sales.csv.zip'
@@ -16,7 +15,7 @@ def load_data():
     data['Date'] = pd.to_datetime(data['Date'])
     return data
 
-# try block ကို စတင်သုံးစွဲခြင်း
+
 try:
     df = load_data()
 
@@ -26,11 +25,11 @@ try:
     st.sidebar.write("Parami University")
     st.sidebar.markdown("---") 
 
-    # (က) Country Select Filter
+    # Country Select Filter
     country_names = ['All'] + sorted(df['Country'].unique().tolist())
     selected_country_name = st.sidebar.selectbox("Select Country", options=country_names)
 
-    # (ခ) Dynamic State Select Filter
+    # State Select Filter
     if selected_country_name != 'All':
         state_options = sorted(df[df['Country'] == selected_country_name]['State'].unique().tolist())
     else:
@@ -39,11 +38,11 @@ try:
     state_names = ['All'] + state_options
     selected_state_name = st.sidebar.selectbox("Select State", options=state_names)
 
-    # (გ) Category Select Filter
+    # Category Select Filter
     category_names = ['All'] + sorted(df['Product_Category'].unique().tolist())
     selected_category_name = st.sidebar.selectbox("Select Category", options=category_names)
 
-    # 4. Filter ဒေတာ စစ်ထုတ်ခြင်း
+    # Filtering data
     filtered_df = df.copy()
 
     if selected_country_name != 'All':
@@ -55,10 +54,10 @@ try:
     if selected_category_name != 'All':
         filtered_df = filtered_df[filtered_df['Product_Category'] == selected_category_name]
 
-    # Filter ဖြစ်ပြီးသား ဒေတာအရေအတွက်ကို ပြသခြင်း
+    
     st.write(f"Total rows found: {filtered_df.shape[0]}")
 
-    # ကော်လံတစ်ခုချင်းစီအတွက် တန်ဖိုးများ တွက်ခြင်း (filtered_df ကို သုံးပါသည်)
+    
     total_profit = filtered_df['Profit'].sum()
     total_cost = filtered_df['Cost'].sum()
     total_revenue = filtered_df['Revenue'].sum()
@@ -67,7 +66,7 @@ try:
     avg_unit_cost = filtered_df['Unit_Cost'].mean()
     total_quantity = filtered_df['Order_Quantity'].sum()
 
-    # ဧရိယာ (၁) - ပထမတန်းအတွက် ၃ ကော်လံ ဆောက်ခြင်း
+    
     row1_col1, row1_col2, row1_col3 = st.columns(3)
     row1_col1.metric("Total Profit", f"${total_profit:,.2f}")
     row1_col2.metric("Total Cost", f"${total_cost:,.2f}")
@@ -75,7 +74,7 @@ try:
 
     st.markdown(" ") 
 
-    # ဧရိယာ (၂) - ဒုတိယတန်း (အောက်ခြေ) အတွက် နောက်ထပ် ၃ ကော်လံ ထပ်ဆောက်ခြင်း
+    
     row2_col1, row2_col2, row2_col3 = st.columns(3)
     row2_col1.metric("Avg Unit Price", f"${avg_unit_price:,.2f}")
     row2_col2.metric("Avg Unit Cost", f"${avg_unit_cost:,.2f}")
@@ -83,10 +82,10 @@ try:
 
     st.markdown("---")
 
-    # ၅။ အရောင်းဂရပ်များ (Charts) ပြသခြင်းအပိုင်း
+    
     st.subheader("📊 Financial Trends & Demographics")
 
-    # (၁) လအလိုက် Revenue & Profit ပြိုင်တူပြလိုင်းဂရပ်
+    # Monthly Revenue & Profit 
     monthly_trend = filtered_df.groupby(filtered_df['Date'].dt.to_period('M'))[['Revenue', 'Profit']].sum().reset_index()
     monthly_trend['Date'] = monthly_trend['Date'].dt.to_timestamp()
 
@@ -94,11 +93,11 @@ try:
     sns.lineplot(data=monthly_trend, x='Date', y='Revenue', ax=ax1, marker='o', label='Revenue', color='#000080', linewidth=2)
     sns.lineplot(data=monthly_trend, x='Date', y='Profit', ax=ax1, marker='s', label='Profit', color='#10B981', linewidth=2)
 
-    # နှစ်အလိုက်ပဲ Format ပြောင်းလဲပေးထားသော အပိုင်း
+    #Year format
     ax1.xaxis.set_major_locator(mdates.YearLocator())
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
-    # ဂဏန်းများ 0.1, 0.2 မပြဘဲ ပုံမှန်အတိုင်း ဒေါ်လာသင်္ကေတ ပြောင်းလဲခြင်း
+    
     ax1.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
     ax1.set_title("Monthly Revenue vs Profit Trend", fontsize=11, fontweight='bold')
     ax1.set_ylabel("Amount ($)")
@@ -108,7 +107,7 @@ try:
 
     st.markdown("<br>", unsafe_allow_html=True) 
 
-    # (၂) ကုန်ပစ္စည်းအလိုက် နှင့် ဝယ်သူ ဂျန်ဒါအလိုက် ဂရပ်နှစ်ခုကို ဘေးချင်းယှဉ်ပြခြင်း
+    
     chart_col1, chart_col2 = st.columns(2)
 
     with chart_col1:
@@ -153,11 +152,11 @@ try:
         st.pyplot(fig3)
         plt.close()
 
-    # (၃) အသက်အုပ်စုအလိုက် အရောင်းပမာဏပြ တိုင်ဂရပ် (Age Group Bar Chart)
+    # (Age Group Bar Chart)
     st.markdown("<br>", unsafe_allow_html=True) 
     st.write("**Sales Count by Customer Age Group**")
 
-    # ဒေတာထဲတွင် Age_Group တန်းပါက ယူသုံးမည်၊ မပါက Customer_Age မှ အုပ်စုခွဲမည်
+    
     if 'Age_Group' in filtered_df.columns:
         age_sales = filtered_df['Age_Group'].value_counts().reset_index()
     else:
@@ -179,7 +178,7 @@ try:
     st.pyplot(fig4)
     plt.close()
 
-    # (၄) Unit Cost vs Unit Price ပြိုင်တူပြသသည့် ဂရပ်အသစ်
+    #  Unit Cost vs Unit Price ပ
     st.markdown("<br>", unsafe_allow_html=True)
     st.write("**Average Unit Cost vs Unit Price by Product Category**")
 
@@ -200,11 +199,10 @@ try:
     plt.close()
     st.markdown("---")
 
-    # ၆။ ဒေတာဇယား (ဂရပ်များ၏ အောက်ခြေတွင် Expander ဖြင့် ပြသခြင်း)
+    
     with st.expander("📋 View Filtered Sales Data"):
         st.dataframe(filtered_df, use_container_width=True)
 
-# ⚠️ အမှားဖြစ်စေသော နေရာကို except ပြန်ပိတ်ပြီး စနစ်တကျ ပြင်ဆင်လိုက်ခြင်း
 except Exception as e:
     st.error(f"Error, Please check the code- {e}")
 

@@ -11,7 +11,7 @@ st.title("🚲 Bike Sales Analysis Dashboard")
 # 2. Data Load လုပ်ခြင်း
 @st.cache_data
 def load_data():
-    path = r'C:\Users\pskp2\bike sales.csv.zip'
+    path = 'bike sales.csv.zip'
     data = pd.read_csv(path)
     data['Date'] = pd.to_datetime(data['Date'])
     return data
